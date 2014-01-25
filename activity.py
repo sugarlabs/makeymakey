@@ -12,10 +12,11 @@
 
 import os
 import subprocess
+from gi.repository import Vte
 from gettext import gettext as _
 
 from gi.repository import Gtk
-from gi.repository import Gdk
+from gi.repository import GLib
 
 from sugar3.activity import activity
 from sugar3.activity.widgets import StopButton
@@ -47,24 +48,31 @@ class MakeyMakey(activity.Activity):
         url = os.path.join(self.bundle_path, 'makeymakey.html')
         graphics = Graphics()
         graphics.add_uri('file://' + url)
-        graphics.set_zoom_level(0.75)
+        graphics.set_zoom_level(0.667)
         center_in_panel.add(graphics)
         graphics.show()
         self.set_canvas(center_in_panel)
         center_in_panel.show()
 
-        try:
-            subprocess.call(['sudo', 'systemctl' 'stop',
-                             'olpc-kbdshim.service'])
-        except OSError, e:
-            _logger.error('Could not stop olpc-kdbshim, %s' % (e))
+        self._vt_command()
 
-    def can_close():
-        try:
-            subprocess.call(['sudo', 'systemctl' 'start',
-                             'olpc-kbdshim.service'])
-        except OSError, e:
-            _logger.error('Could not restart olpc-kbdshim, %s' % (e))
+    def _vt_command(self, command='stop'):
+        vt = Vte.Terminal()
+        success_, pid = vt.fork_command_full(
+            Vte.PtyFlags.DEFAULT,
+            os.environ["HOME"],
+            # ["/bin/bash"], 
+            ['/usr/bin/sudo', '/usr/bin/systemctl', command, 'olpc-kbdshim'],
+            [],
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+            None,
+            None)
+        _logger.error('VTE %s %s' % (str(success_), str(pid)))
+
+    def can_close(self):
+        _logger.error('can close')
+        self._vt_command(command='start')
+        return True
 
     def _setup_toolbars(self):
         ''' Setup the toolbars. '''
@@ -83,7 +91,7 @@ class MakeyMakey(activity.Activity):
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
-        toolbox.toolbar.insert(separator)
+        toolbox.toolbar.insert(separator, -1)
         separator.show()
 
         stop_button = StopButton(self)
