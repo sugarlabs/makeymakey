@@ -1,0 +1,11 @@
+[Activity]
+name = MakeyMakey
+exec = sugar-activity activity.MakeyMakey
+bundle_id = org.sugarlabs.MakeyMakey
+icon = makeymakey
+activity_version = 1
+show_launcher = yes
+license = GPLv3
+single_instance = yes
+summary = While running, this activity enables MakeyMakey.
+
