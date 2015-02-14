@@ -8,4 +8,4 @@ show_launcher = yes
 license = GPLv3
 single_instance = yes
 summary = While running, this activity enables MakeyMakey.
-
+category = system
