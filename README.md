@@ -1,7 +1,9 @@
-makey makey
-===========
+makeymakey
+==========
 
-Enable the Makey Makey on the OLPC XO 4 hardware
+Makey Makey activity for Sugar
+
+Enables the Makey Makey on the OLPC XO 4 hardware
 
 Caveats:
 
